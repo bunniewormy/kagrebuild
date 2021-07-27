@@ -3,15 +3,20 @@
 #include "GenericButtonCommon.as"
 #include "StandardRespawnCommand.as"
 #include "StandardControlsCommon.as"
+#include "TunnelCommon.as"
 
 void onInit(CBlob@ this)
 {
+	this.set_TileType("background tile", CMap::tile_castle_back);
+
 	this.getSprite().SetZ(-50); //background
+	this.getShape().getConsts().mapCollisions = false;
 
 	this.CreateRespawnPoint("outpost", Vec2f(0.0f, -4.0f));
 	this.Tag("respawn");
 	this.Tag("change class drop inventory");
 	this.Tag("travel tunnel");
+	this.Tag("ignore raid");
 	this.set_Vec2f("travel button pos", Vec2f(-6, 6));
 	InitClasses(this);
 
@@ -27,7 +32,24 @@ void onInit(CBlob@ this)
 		flag.SetRelativeZ(0.8f);
 		flag.SetOffset(Vec2f(10.5f, -12.0f));
 	}
-	//this.getShape().SetRotationsAllowed( false );
+
+	CSpriteLayer@ planks = sprite.addSpriteLayer("planks", "Outpost.png", 16, 16);
+	if (planks !is null)
+	{
+		Animation@ anim = planks.addAnimation("default", 0, false);
+		anim.AddFrame(40);
+		planks.SetRelativeZ(10.0f);
+		planks.SetOffset(Vec2f(9.0f, 10.0f));
+	}
+}
+
+void onTick(CSprite@ this)
+{
+	CSpriteLayer@ planks = this.getSpriteLayer("planks");
+	if (planks is null) return;
+	CBlob@[] list;
+
+	planks.SetVisible(!getTunnels(this.getBlob(), list));
 }
 
 void GetButtonsFor(CBlob@ this, CBlob@ caller)
