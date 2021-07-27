@@ -1,4 +1,4 @@
-# CTF Rebuilt
+# CTF Rebuild
 
 Repo for a rebalance mod of CTF in KAG.
 
