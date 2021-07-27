@@ -1,5 +1,4 @@
-# kagrebuild
-kag-rebuild
+# CTF Rebuilt
 
 Repo for a rebalance mod of CTF in KAG.
 
