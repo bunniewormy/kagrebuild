@@ -427,15 +427,21 @@ void Unpack(CBlob@ this)
 		Vec2f adjusted_pos = pos;
 		if (blob.getName() == "outpost")
 		{
-			pos += Vec2f(0, map.tilesize); // i tried to avoid hardcode but fuck it
+			// i tried to avoid hardcode but fuck it
+			// prevents outpost from spawning 1 tile above ground
+			pos += Vec2f(0, map.tilesize);
 		}
 
-		if (map.rayCastSolid(this.getPosition(), this.getPosition() + Vec2f(0, 10.0f), adjusted_pos))
+		if (map.rayCastSolid(this.getPosition(), this.getPosition() + Vec2f(0, 14.0f), adjusted_pos))
 		{
 			adjusted_pos -= Vec2f(0, blob.getHeight() / 2 + 4.0f);
 		}
 		else
 		{
+			if (blob.getName() == "outpost")
+			{
+				//pos -= Vec2f(0, map.tilesize);
+			}
 			adjusted_pos = pos;
 		}
 
