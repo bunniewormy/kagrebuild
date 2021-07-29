@@ -1,3 +1,4 @@
+#include "TrackTileDamage.as";
 
 const f32 MAX_BUILD_LENGTH = 4.0f;
 
@@ -41,7 +42,32 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 {
 	f32 radius = 0.0f;
 	CMap@ map = this.getMap();
+	CRules@ rules = getRules();
 	sameTile = false;
+
+	Tile current_tile = map.getTileFromTileSpace(p);
+
+	RepairTileInfo[] recently_damaged_tiles;
+	rules.get("RecentlyDamagedTiles", recently_damaged_tiles);
+
+	//printf("siza" + recently_damaged_tiles.size());
+
+	for (int i = 0; i < recently_damaged_tiles.size(); ++i)
+	{
+		u32 index1 = recently_damaged_tiles[i].index;
+
+    	s32 x = Maths::Floor(p.x);
+	    x /= map.tilesize;
+	    s32 y = Maths::Floor(p.y);
+	    y /= map.tilesize;
+	    u32 index2 = x + y * map.tilemapwidth;
+
+		if (index1 == index2 && getGameTime() < recently_damaged_tiles[i].repair_time)
+		{
+			//printf("tima: " + recently_damaged_tiles[i].repair_time + ", " + getGameTime());
+			return false;
+		}
+	}
 
 	if (blob is null) // BLOCKS
 	{
@@ -84,7 +110,6 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 	if ((buildTile == CMap::tile_wood && backtile.type >= CMap::tile_wood_d1 && backtile.type <= CMap::tile_wood_d0) ||
 			(buildTile == CMap::tile_castle && backtile.type >= CMap::tile_castle_d1 && backtile.type <= CMap::tile_castle_d0))
 	{
-		return false;
 		//repair like tiles
 	}
 	else if (buildTile == CMap::tile_castle && backtile.type >= CMap::tile_wood && backtile.type <= CMap::tile_wood_d0 && !map.isInFire(p))
@@ -96,9 +121,10 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 		//cant build wood on stone background
 		return false;
 	}
-	else if (map.isTileSolid(backtile) || map.hasTileSolidBlobs(backtile))
+	else if (map.isTileSolid(backtile) && !map.hasTileSolidBlobs(backtile))
 	{
-		if (!buildSolid && !map.hasTileSolidBlobsNoPlatform(backtile) && !map.isTileSolid(backtile))
+		//if (!buildSolid && !map.hasTileSolidBlobsNoPlatform(backtile) && !map.isTileSolid(backtile))
+		if (!buildSolid && !map.isTileSolid(backtile))
 		{
 			//skip onwards, platforms don't block backwall
 		}
@@ -139,6 +165,23 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 		}
 
 		Vec2f middle = p;
+
+		s32 x = Maths::Floor(p.x);
+		x /= map.tilesize;
+		s32 y = Maths::Floor(p.y);
+		y /= map.tilesize;
+
+		//printf("middle" + x + ", " + y);
+
+		CBlob@ blob_at_pos = map.getBlobAtPosition(Vec2f(p.x, p.y));
+
+		if(isDoor && blob_at_pos !is null)
+		{
+			if(blob_at_pos.getName() == "wooden_door" && blob_at_pos.getHealth() != blob_at_pos.getInitialHealth()) 
+			{	
+				return true;
+			}
+		}
 
 		if (!isSeed && !isLadder && (buildSolid || isSpikes || isDoor) && map.getSectorAtPosition(middle, "no build") !is null)
 		{

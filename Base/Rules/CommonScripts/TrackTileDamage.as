@@ -1,16 +1,28 @@
-const int repairCooldown = 30;
+const int repair_cd = 45;
 
-class RepairTileInfo
+shared class RepairTileInfo
 {
 	u32 index;
 	u32 repair_time;
 }
 
-RepairTileInfo[] repairTileInfoArray;
+RepairTileInfo[] recentlyDamagedTiles;
+RepairTileInfo[] recentlyDamagedTilesClient;
 
 void onInit(CRules@ this)
 {
 	this.addCommandID("sync repairtile array");
+	this.addCommandID("send repairtiles to client");
+	this.addCommandID("clear client repairtiles");
+
+	CMap@ map = getMap();
+	if (!map.hasScript("TrackTileDamage.as")) map.AddScript("TrackTileDamage.as"); // adding map scripts from CRules is much more convenient than adding it to every map in mapcycle.cfg
+}
+
+void onRestart(CRules@ this)
+{
+	CMap@ map = getMap();
+	if (!map.hasScript("TrackTileDamage.as")) map.AddScript("TrackTileDamage.as");
 }
 
 // onSetTile runs when a tile is damaged
@@ -18,62 +30,102 @@ void onSetTile(CMap@ this, u32 index, TileType newtile, TileType oldtile)
 {
 	if (getGameTime() < 30) return; // so that we don't run on map load
 
-	printf("sus");
-	
+	bool set_repair_time = true;
+
 	if (!(this.isTileWood(newtile) || // wood tile
-	newtile == CMap::tile_wood_back || // wood backwall
-	newtile == 207 || // wood backwall damaged
-	this.isTileCastle(newtile) || // castle block
-	newtile == CMap::tile_castle_back || // castle backwall
-	newtile == 76 || // castle backwall damaged
-	newtile == 77 || // castle backwall damaged
-	newtile == 78 || // castle backwall damaged
-	newtile == 79 || // castle backwall damaged
-	newtile == CMap::tile_castle_back_moss)) // castle mossbackwall
+	this.isTileCastle(newtile))) // castle block
 	{
-		return;
+		set_repair_time = false;
 	}
+
+	bool found_tile = false;
 
 	if (isServer())
 	{
-		printf("mogus");
 		CRules@ rules = getRules();
 		CBitStream params;
-		rules.SendCommand(rules.getCommandID("sync repairtile array"), params);
 
-		for (int i = 0; i < repairTileInfoArray.size(); ++i)
+		for (int i = 0; i < recentlyDamagedTiles.size(); ++i)
 		{
-			RepairTileInfo current_repairtileinfo = repairTileInfoArray[i];
+			RepairTileInfo@ current_repairtileinfo = recentlyDamagedTiles[i];
 
 			if (current_repairtileinfo.index == index)
 			{
-				current_repairtileinfo.repair_time = getGameTime();
-				return;
+				//printf("hi");
+				if(set_repair_time && current_repairtileinfo.repair_time < getGameTime())
+				{
+					current_repairtileinfo.repair_time = (getGameTime() + repair_cd);
+					found_tile = true;
+				}
+				else
+				{
+					recentlyDamagedTiles.removeAt(i);
+				}
 			}
 		}
 
-		RepairTileInfo newInfo;
-		newInfo.index = index;
-		newInfo.repair_time = getGameTime();
+		if(!found_tile)
+		{
+			RepairTileInfo newInfo;
+			if(set_repair_time)
+			{
+				newInfo.index = index;
+				newInfo.repair_time = (getGameTime() + repair_cd);
+				recentlyDamagedTiles.push_back(newInfo);
+			}
+		}
 
-		repairTileInfoArray.push_back(newInfo);
+		rules.SendCommand(rules.getCommandID("sync repairtile array"), params);
 	}
 }
 
 void onCommand(CRules@ this, u8 cmd, CBitStream @params)
 {
-	if (cmd == this.getCommandID("sync repairtile array"))
+	if (cmd == this.getCommandID("sync repairtile array") && isServer())
 	{
-		printf("d");
-		// remove 
-		for (int i = 0; i < repairTileInfoArray.size(); ++i)
+		this.SendCommand(this.getCommandID("clear client repairtiles"), params);
+
+		// remove blocks from array that werent damaged recently
+		for (int i = 0; i < recentlyDamagedTiles.size(); ++i)
 		{
-			if (getGameTime() - repairCooldown < repairTileInfoArray[i].repair_time)
+			if (getGameTime() > recentlyDamagedTiles[i].repair_time)
 			{
-				repairTileInfoArray.removeAt(i);
+				recentlyDamagedTiles.removeAt(i);
 			}
 		}
 
-		this.set("RepairTileArray", repairTileInfoArray);
+		// syncing because you cant sync arrays
+		for (int i = 0; i < recentlyDamagedTiles.size(); ++i)
+		{
+			CBitStream bparams;
+
+			bparams.write_u32(recentlyDamagedTiles[i].index);
+			bparams.write_u32(recentlyDamagedTiles[i].repair_time);
+
+			this.SendCommand(this.getCommandID("send repairtiles to client"), bparams);
+		}
+	}
+
+	if (cmd == this.getCommandID("send repairtiles to client") && isClient())
+	{
+		u32 index;
+		if (!params.saferead_u32(index)) return;
+		u32 repair_time;
+		if (!params.saferead_u32(repair_time)) return;
+
+		RepairTileInfo newInfo;
+		newInfo.index = index;
+		newInfo.repair_time = repair_time;
+
+		recentlyDamagedTilesClient.push_back(newInfo);
+
+		this.set("RecentlyDamagedTiles", recentlyDamagedTilesClient);
+	}
+
+	if (cmd == this.getCommandID("clear client repairtiles") && isClient())
+	{
+		recentlyDamagedTilesClient.clear();
+
+		this.set("RecentlyDamagedTiles", recentlyDamagedTilesClient);
 	}
 }
