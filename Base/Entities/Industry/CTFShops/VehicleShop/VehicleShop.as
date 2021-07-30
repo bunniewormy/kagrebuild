@@ -15,8 +15,6 @@ void onInit(CBlob@ this)
 	this.getSprite().SetZ(-50); //background
 	this.getShape().getConsts().mapCollisions = false;
 
-	AddIconToken("$outpost$", "Outpost.png", Vec2f(40, 40), 0);
-
 	//INIT COSTS
 	InitCosts();
 
@@ -39,13 +37,13 @@ void onInit(CBlob@ this)
 		ShopItem@ s = addShopItem(this, "Ballista", ballista_icon, "ballista", ballista_icon + "\n\n\n" + Descriptions::ballista, false, true);
 		s.crate_icon = 5;
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::ballista);
-		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::ballista_gold);
 	}
 	{
-		ShopItem@ s = addShopItem(this, "Outpost", "$outpost$", "outpost", "A deployable respawn point with a storage that allows fast travel", false, true);
+		string outpost_icon = getTeamIcon("outpost", "VehicleIcons.png", team_num, Vec2f(32, 32), 6);
+		ShopItem@ s = addShopItem(this, "Outpost", outpost_icon, "outpost", outpost_icon + "\n\n\n" + Descriptions::outpost, false, true);
 		s.crate_icon = 7;
-		AddRequirement(s.requirements, "coin", "", "Coins", 150);
-		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", 50);
+		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::outpost_coins);
+		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::outpost_gold);
 	}
 	{
 		ShopItem@ s = addShopItem(this, "Ballista Ammo", "$mat_bolts$", "mat_bolts", "$mat_bolts$\n\n\n" + Descriptions::ballista_ammo, false, false);
@@ -62,12 +60,6 @@ void onInit(CBlob@ this)
 		s.buttonwidth = 2;
 		s.buttonheight = 1;
 		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::ballista_bomb_ammo);
-	}
-	{
-		ShopItem@ s = addShopItem(this, "Outpost", "$outpost$", "outpost", "A deployable respawn point with a storage that allows fast travel", false, true);
-		s.crate_icon = 5;
-		AddRequirement(s.requirements, "coin", "", "Coins", CTFCosts::outpost_coins);
-		AddRequirement(s.requirements, "blob", "mat_gold", "Gold", CTFCosts::outpost_gold);
 	}
 }
 
@@ -98,7 +90,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 				CBlob@ crate = getBlobByNetworkID(item);
 				
 				crate.set_Vec2f("required space", Vec2f(5, 5));
-				crate.set_Vec2f("space_offset", Vec2f(0, -1));
 				crate.set_s32("gold building amount", CTFCosts::outpost_gold);
 				crate.Tag("unpack_check_nobuild");
 			}
