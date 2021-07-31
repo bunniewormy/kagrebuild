@@ -37,9 +37,9 @@ namespace Descriptions
 	boulder                    = getTranslatedString("A stone boulder useful for crushing enemies."),
 	trampoline                 = getTranslatedString("A trampoline used for bouncing and jumping over enemy walls."),
 	saw                        = getTranslatedString("A circular saw that turns tree logs into wood material."),
-	drill                      = getTranslatedString("A mining drill. Increases speed of digging and gathering resources, but gains only half the possible resources."),
+	drill                      = getTranslatedString("A mining drill. Increases speed of digging and gathering resources, but gains only 75% the possible resources (with the exception of gold ore)."),
 	crate                      = getTranslatedString("An empty wooden crate for storing and transporting inventory."),
-	food                       = getTranslatedString("For healing. Don't think about this too much."),
+	food                       = getTranslatedString("Heals 2 hearts. Don't think about this too much."),
 
 	tradingpost                = getTranslatedString("A trading post. Requires a trader to reside inside."),
 	excalibur                  = getTranslatedString("Excalibur is the legendary sword of King Arthur, attributed with magical powers to conquer all enemies."),
@@ -84,10 +84,10 @@ namespace Descriptions
 	quarry               	   = getTranslatedString("A Quarry intended to mine stone, fueled by wood."),
 
 	//Quarters.as
-	beer                       = getTranslatedString("A refreshing mug of beer."),
-	meal                       = getTranslatedString("A hearty meal to get you back on your feet."),
+	beer                       = getTranslatedString("A refreshing mug of beer. Heals 1 heart."),
+	meal                       = getTranslatedString("A hearty meal to get you back on your feet. Heals full health."),
 	egg                        = getTranslatedString("A suspiciously undercooked egg, maybe it will hatch."),
-	burger                     = getTranslatedString("A burger to go."),
+	burger                     = getTranslatedString("A burger to go. Heals 2 hearts."),
 
 	//Magic Scrolls
 	scroll_carnage             = getTranslatedString("This magic scroll when cast will turn all nearby enemies into a pile of bloody gibs."),

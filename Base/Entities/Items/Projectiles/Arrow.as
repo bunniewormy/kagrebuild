@@ -16,8 +16,7 @@ const f32 arrowFastSpeed = 13.0f;
 const f32 ARROW_PUSH_FORCE = 6.0f;
 const f32 SPECIAL_HIT_SCALE = 1.0f; //special hit on food items to shoot to team-mates
 
-const s32 FIRE_IGNITE_TIME = 5;
-
+const s32 FIRE_IGNITE_TIME = 1;
 
 //Arrow logic
 
