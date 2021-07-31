@@ -1,7 +1,7 @@
 #define SERVER_ONLY
 
 // should stone turn into mossy stone
-const bool moss_stone = false;
+const bool moss_stone = true;
 
 // random_growth is randomly set from 0 to 1.0
 // don't set values lower than 0.0001
@@ -10,6 +10,7 @@ const f32 grass_grow_chance = 0.015f;
 const f32 bush_grow_chance = 0.003f;
 const f32 flower_grow_chance = 0.0005f;
 const f32 grain_grow_chance = flower_grow_chance + 0.0005f; //add flower chance to prevent them from overriding each other
+const f32 chicken_grow_chance = 0.001f; // chickens are plants don't @ me
 
 const f32 moss_stone_chance = 0.002f;
 
@@ -280,6 +281,13 @@ void onTick(CRules@ this)
 					{
 						server_CreateBlob(plants_stuff[plant], -1, tinfo.coords - Vec2f(0,tilesize));
 					}
+				}
+
+				random_grow = XORRandom(10000) * 0.0001f;
+
+				if (random_grow <= chicken_grow_chance)
+				{
+					server_CreateBlob("chicken", -1, tinfo.coords - Vec2f(0,tilesize));
 				}
 			}
 		}
