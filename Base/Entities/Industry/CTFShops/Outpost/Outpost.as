@@ -13,6 +13,10 @@ void onInit(CBlob@ this)
 	this.getShape().getConsts().mapCollisions = false;
 
 	this.CreateRespawnPoint("outpost", Vec2f(0.0f, -4.0f));
+
+	InitRespawnCommand(this);
+	InitClasses(this);
+
 	this.Tag("respawn");
 	this.Tag("change class drop inventory");
 	this.Tag("travel tunnel");
