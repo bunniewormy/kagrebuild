@@ -5,6 +5,8 @@
 #include "StandardControlsCommon.as"
 #include "TunnelCommon.as"
 
+u8 respawn_time = 30 * 5; // 5 seconds
+
 void onInit(CBlob@ this)
 {
 	this.set_TileType("background tile", CMap::tile_castle_back);
@@ -22,6 +24,7 @@ void onInit(CBlob@ this)
 	this.Tag("travel tunnel");
 	this.Tag("ignore raid");
 	this.Tag("builder always hit");
+	this.set_u8("additional respawn time", respawn_time); // in ticks
 	this.set_Vec2f("travel button pos", Vec2f(-6, 6));
 	this.set_Vec2f("travel offset", Vec2f(-10, 0));
 	this.inventoryButtonPos = Vec2f(12, -12);
