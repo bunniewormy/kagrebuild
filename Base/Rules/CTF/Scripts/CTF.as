@@ -131,6 +131,16 @@ shared class CTFSpawns : RespawnSystem
 				p_info.team = 0;
 			}
 
+			CBlob@ spawnBlob = getSpawnBlob(p_info);
+
+			if (spawnBlob !is null)
+			{
+				if (spawnBlob.exists("custom respawn immunity"))
+				{
+					p_info.customImmunityTime = spawnBlob.get_u8("custom respawn immunity");
+				}
+			}
+
 			CPlayer@ player = getPlayerByUsername(p_info.username); // is still connected?
 
 			if (player is null)

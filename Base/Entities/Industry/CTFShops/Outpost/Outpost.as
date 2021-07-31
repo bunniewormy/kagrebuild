@@ -6,6 +6,7 @@
 #include "TunnelCommon.as"
 
 u8 respawn_time = 30 * 5; // 5 seconds
+u8 respawn_immunity_time = 30 * 1; // 1 second
 
 void onInit(CBlob@ this)
 {
@@ -24,7 +25,10 @@ void onInit(CBlob@ this)
 	this.Tag("travel tunnel");
 	this.Tag("ignore raid");
 	this.Tag("builder always hit");
-	this.set_u8("additional respawn time", respawn_time); // in ticks
+
+	this.set_u8("additional respawn time", respawn_time);
+	this.set_u8("custom respawn immunity", respawn_immunity_time); 
+
 	this.set_Vec2f("travel button pos", Vec2f(-6, 6));
 	this.set_Vec2f("travel offset", Vec2f(-10, 0));
 	this.inventoryButtonPos = Vec2f(12, -12);
