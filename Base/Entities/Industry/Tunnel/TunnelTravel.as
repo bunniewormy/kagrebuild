@@ -143,8 +143,14 @@ void Travel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
 		if (caller.isAttached())
 			return;
 
+		Vec2f position = tunnel.getPosition();
+		if (this.exists("travel offset"))
+		{
+			tunnel.isFacingLeft() ? position -= tunnel.get_Vec2f("travel offset") : position += tunnel.get_Vec2f("travel offset");
+		}
+
 		// move caller
-		caller.setPosition(tunnel.getPosition());
+		caller.setPosition(position);
 		caller.setVelocity(Vec2f_zero);
 		//caller.getShape().PutOnGround();
 
