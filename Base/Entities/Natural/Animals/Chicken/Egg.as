@@ -1,5 +1,5 @@
 
-const int grow_time = 1 * getTicksASecond();
+const int grow_time = 50 * getTicksASecond();
 
 const int MAX_CHICKENS_TO_HATCH = 5;
 const f32 CHICKEN_LIMIT_RADIUS = 120.0f;
