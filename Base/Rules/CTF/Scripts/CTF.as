@@ -302,7 +302,8 @@ shared class CTFSpawns : RespawnSystem
 			else if(!getSpawnBlob(info).exists("additional respawn time") && oldSpawn.exists("additional respawn time"))
 			{
 				old_spawn_time -= oldSpawn.get_u8("additional respawn time");
-				if(old_spawn_time < 0)
+
+				if(old_spawn_time <= 60)
 					old_spawn_time = 60;
 			}
 
