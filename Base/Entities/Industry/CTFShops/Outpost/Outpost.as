@@ -17,6 +17,7 @@ void onInit(CBlob@ this)
 	this.Tag("change class drop inventory");
 	this.Tag("travel tunnel");
 	this.Tag("ignore raid");
+	this.Tag("builder always hit");
 	this.set_Vec2f("travel button pos", Vec2f(-6, 6));
 	InitClasses(this);
 
