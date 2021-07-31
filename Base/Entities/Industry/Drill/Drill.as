@@ -444,8 +444,8 @@ f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitt
 
 	if (customData == Hitters::water)
 	{
-		s16 current_heat = this.get_u8(heat_prop) - heat_max*0.7f;
-		if (current_heat < 0) current_heat= 0;
+		s16 current_heat = this.get_u8(heat_prop) - heat_max * 0.5f;
+		if (current_heat < 0) current_heat = 0;
 		this.set_u8(heat_prop, current_heat);
 		makeSteamPuff(this);
 	}
