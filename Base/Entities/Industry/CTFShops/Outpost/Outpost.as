@@ -19,7 +19,7 @@ void onInit(CBlob@ this)
 	this.Tag("ignore raid");
 	this.Tag("builder always hit");
 	this.set_Vec2f("travel button pos", Vec2f(-6, 6));
-	this.set_Vec2f("travel offset", Vec2f(-8, 0));
+	this.set_Vec2f("travel offset", Vec2f(-10, 0));
 	this.inventoryButtonPos = Vec2f(12, -12);
 
 	CSprite@ sprite = this.getSprite();
