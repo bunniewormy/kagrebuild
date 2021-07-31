@@ -26,6 +26,7 @@ void onInit(CBlob@ this)
 	this.addCommandID("boobytrap");
 
 	this.set_u32("boobytrap_cooldown_time", 0);
+	this.set_s32("gold building amount", 0);
 
 	u8 frame = 0;
 	if (this.exists("frame"))
@@ -471,7 +472,7 @@ void Unpack(CBlob@ this)
 		blob.SetFacingLeft(this.isFacingLeft());
 	}
 
-	this.Tag("dont_drop_gold"); // for crates with vehicles that cost gold
+	this.set_s32("gold building amount", 0); // for crates with vehicles that cost gold
 	this.server_SetHealth(-1.0f); // TODO: wont gib on client
 	this.server_Die();
 }
