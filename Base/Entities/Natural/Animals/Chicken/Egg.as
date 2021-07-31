@@ -52,7 +52,6 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 		if (getNet().isServer())
 		{
 			u8 teamNum = this.getTeamNum();
-			printf("t" + teamNum);
 			this.server_SetHealth(-1);
 			this.server_Die();
 			server_CreateBlob("chicken", teamNum, this.getPosition() + Vec2f(0, -5.0f));
