@@ -52,6 +52,7 @@ void HealBlob(CBlob@ this, CBlob @healBlob, CBlob @carryBlob, Vec2f cursorPos)
 		SetBuildDelay(this, delay / 2); // Set a smaller delay to compensate for lag/late packets etc
 
 		healBlob.server_SetHealth(healBlob.getInitialHealth());
+		getMap().server_SetTile(healBlob.getPosition(), carryBlob.get_TileType("background tile"));
 
 		// DIRTY DISGUSTING HACK so that it does all the same stuff it has to do when placing
 		carryBlob.Tag("temp blob placed");

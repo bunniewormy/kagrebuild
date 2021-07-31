@@ -201,7 +201,6 @@ void MakeDamageFrame(CBlob@ this, bool repaired=false)
 	CSprite@ sprite = this.getSprite();
 	f32 hp = this.getHealth();
 	f32 full_hp = this.getInitialHealth();
-
 	Animation@ destruction_anim = sprite.getAnimation("destruction");
 
 	if (destruction_anim !is null)
@@ -214,7 +213,7 @@ void MakeDamageFrame(CBlob@ this, bool repaired=false)
 
 		if(close_anim !is null)
 		{
-			close_anim.RemoveFrame(close_anim.getFramesCount());
+			close_anim.RemoveFrame(close_anim.getFramesCount() - 1);
 			close_anim.AddFrame(destruction_anim.getFrame(frame));
 		}
 
