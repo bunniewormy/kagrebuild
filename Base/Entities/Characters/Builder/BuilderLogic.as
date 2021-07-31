@@ -568,6 +568,8 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 		}
 	}
 
+	printf("hic");
+
 	// BUILD BLOB
 	// take requirements from blob that is built and play sound
 	// put out another one of the same

@@ -20,7 +20,7 @@ void onInit(CBlob@ this)
 
 	// SHOP
 	this.set_Vec2f("shop offset", Vec2f_zero);
-	this.set_Vec2f("shop menu size", Vec2f(6, 6));
+	this.set_Vec2f("shop menu size", Vec2f(4, 4));
 	this.set_string("shop description", "Buy");
 	this.set_u8("shop icon", 25);
 

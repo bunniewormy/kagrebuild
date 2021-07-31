@@ -41,6 +41,33 @@ void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos)
 	}
 }
 
+void HealBlob(CBlob@ this, CBlob @healBlob, CBlob @carryBlob, Vec2f cursorPos)
+{
+	if (healBlob !is null)
+	{
+		if (!serverBlobCheck(this, healBlob, cursorPos))
+			return;
+
+		u32 delay = this.get_u32("build delay");
+		SetBuildDelay(this, delay / 2); // Set a smaller delay to compensate for lag/late packets etc
+
+		healBlob.server_SetHealth(healBlob.getInitialHealth());
+
+		// DIRTY DISGUSTING HACK so that it does all the same stuff it has to do when placing
+		carryBlob.Tag("temp blob placed");
+		if (carryBlob.hasTag("has damage owner"))
+		{
+			carryBlob.SetDamageOwnerPlayer(this.getPlayer());
+		}
+
+		if (this.server_DetachFrom(carryBlob))
+		{
+			carryBlob.server_Die();
+		}
+		// end of hack
+	}
+}
+
 // Returns true if pos is valid
 bool serverBlobCheck(CBlob@ blob, CBlob@ blobToPlace, Vec2f cursorPos)
 {
@@ -172,6 +199,7 @@ void onInit(CBlob@ this)
 	SetupBuildDelay(this);
 
 	this.addCommandID("placeBlob");
+	this.addCommandID("healBlob");
 	this.addCommandID("settleLadder");
 	this.addCommandID("rotateBlob");
 
@@ -340,16 +368,22 @@ void onTick(CBlob@ this)
 				if (snap && bc.cursorClose && bc.hasReqs && bc.buildable && bc.supported)
 				{
 					CMap@ map = getMap();
-					CBlob@ blob_at_pos = map.getBlobAtPosition(getBottomOfCursor(bc.tileAimPos, carryBlob));
-					if (blob_at_pos !is null)
+					CBlob@ blobAtPos = map.getBlobAtPosition(getBottomOfCursor(bc.tileAimPos, carryBlob));
+					if (blobAtPos !is null && carryBlob.getConfig() == blobAtPos.getConfig())
 					{
-						blob_at_pos.server_Die();
+						printf("illida");
+						CBitStream params;
+						params.write_u16(carryBlob.getNetworkID());
+						params.write_Vec2f(getBottomOfCursor(bc.tileAimPos, carryBlob));
+						this.SendCommand(this.getCommandID("healBlob"), params);
 					}
-
-					CBitStream params;
-					params.write_u16(carryBlob.getNetworkID());
-					params.write_Vec2f(getBottomOfCursor(bc.tileAimPos, carryBlob));
-					this.SendCommand(this.getCommandID("placeBlob"), params);
+					else
+					{
+						CBitStream params;
+						params.write_u16(carryBlob.getNetworkID());
+						params.write_Vec2f(getBottomOfCursor(bc.tileAimPos, carryBlob));
+						this.SendCommand(this.getCommandID("placeBlob"), params);
+					}
 					u32 delay = 2 * this.get_u32("build delay");
 					SetBuildDelay(this, delay);
 					bc.blobActive = false;
@@ -460,6 +494,19 @@ void onCommand(CBlob@ this, u8 cmd, CBitStream @params)
 			Vec2f pos = params.read_Vec2f();
 			PlaceBlob(this, carryBlob, pos);
 			SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), carryBlob.getName()));
+		}
+	}
+	if (cmd == this.getCommandID("healBlob"))
+	{
+		CBlob @carryBlob = getBlobByNetworkID(params.read_u16());
+		Vec2f pos = params.read_Vec2f();
+
+		CBlob @healBlob = getMap().getBlobAtPosition(pos);
+
+		if (carryBlob !is null)
+		{
+			HealBlob(this, healBlob, carryBlob, pos);
+			SendGameplayEvent(createBuiltBlobEvent(this.getPlayer(), healBlob.getName()));
 		}
 	}
 	else if (cmd == this.getCommandID("settleLadder"))

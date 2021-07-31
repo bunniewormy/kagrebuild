@@ -1,3 +1,5 @@
+#include "TrackTileDamage.as";
+
 const f32 MAX_BUILD_LENGTH = 4.0f;
 
 shared class BlockCursor
@@ -42,6 +44,30 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 	CMap@ map = this.getMap();
 	CRules@ rules = getRules();
 	sameTile = false;
+
+	Tile current_tile = map.getTileFromTileSpace(p);
+
+	RepairTileInfo[] recently_damaged_tiles;
+	rules.get("RecentlyDamagedTiles", recently_damaged_tiles);
+
+	//printf("siza" + recently_damaged_tiles.size());
+
+	for (int i = 0; i < recently_damaged_tiles.size(); ++i)
+	{
+		u32 index1 = recently_damaged_tiles[i].index;
+
+    	s32 x = Maths::Floor(p.x);
+	    x /= map.tilesize;
+	    s32 y = Maths::Floor(p.y);
+	    y /= map.tilesize;
+	    u32 index2 = x + y * map.tilemapwidth;
+
+		if (index1 == index2 && getGameTime() < recently_damaged_tiles[i].repair_time)
+		{
+			//printf("tima: " + recently_damaged_tiles[i].repair_time + ", " + getGameTime());
+			return false;
+		}
+	}
 
 	if (blob is null) // BLOCKS
 	{
@@ -121,22 +147,21 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 		return false;
 	}
 	// no blocking actors?
+	// printf("d");
 	if (blob is null || !blob.hasTag("ignore blocking actors"))
 	{
 		bool isLadder = false;
 		bool isSpikes = false;
 		bool isDoor = false;
-		bool isPlatform = false;
 		bool isSeed = false;
-
 		if (blob !is null)
 		{
 			const string bname = blob.getName();
 			isLadder = bname == "ladder";
 			isSpikes = bname == "spikes";
 			isDoor = bname == "wooden_door" || bname == "stone_door" || bname == "bridge";
-			isPlatform = bname == "wooden_platform";
 			isSeed = bname == "seed";
+
 		}
 
 		Vec2f middle = p;
@@ -146,19 +171,19 @@ bool isBuildableAtPos(CBlob@ this, Vec2f p, TileType buildTile, CBlob @blob, boo
 		s32 y = Maths::Floor(p.y);
 		y /= map.tilesize;
 
-		CBlob@ blobAtPos = map.getBlobAtPosition(Vec2f(p.x, p.y));
+		//printf("middle" + x + ", " + y);
 
-		if(blobAtPos !is null && blob !is null && (isDoor || isPlatform))
+		CBlob@ blob_at_pos = map.getBlobAtPosition(Vec2f(p.x, p.y));
+
+		if(isDoor && blob_at_pos !is null)
 		{
-			if(blobAtPos.getConfig() == blob.getConfig() && 
-				blobAtPos.getTeamNum() == blob.getTeamNum() && 
-				blobAtPos.getHealth() != blobAtPos.getInitialHealth()) 
+			if(blob_at_pos.getName() == "wooden_door" && blob_at_pos.getHealth() != blob_at_pos.getInitialHealth()) 
 			{	
 				return true;
 			}
 		}
 
-		if (!isSeed && !isLadder && (buildSolid || isSpikes || isDoor || isPlatform) && map.getSectorAtPosition(middle, "no build") !is null)
+		if (!isSeed && !isLadder && (buildSolid || isSpikes || isDoor) && map.getSectorAtPosition(middle, "no build") !is null)
 		{
 			return false;
 		}
