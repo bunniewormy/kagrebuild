@@ -1,7 +1,7 @@
 #define SERVER_ONLY
 
 // should stone turn into mossy stone
-const bool moss_stone = false;
+const bool moss_stone = true;
 
 // random_growth is randomly set from 0 to 1.0
 // don't set values lower than 0.0001
