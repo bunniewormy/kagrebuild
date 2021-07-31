@@ -30,6 +30,8 @@ const int coinsOnBuildWorkshop = 10;
 
 const int warmupFactor = 3;
 
+const f32 killstreakFactor = 1.2f;
+
 string[] names;
 
 void GiveRestartCoins(CPlayer@ p)
@@ -115,7 +117,7 @@ void onPlayerDie(CRules@ this, CPlayer@ victim, CPlayer@ killer, u8 customData)
 		{
 			if (killer !is victim && killer.getTeamNum() != victim.getTeamNum())
 			{
-				killer.server_setCoins(killer.getCoins() + (giveBuilderBonus ? coinsOnKillAddBuilder : coinsOnKillAdd));
+				killer.server_setCoins(killer.getCoins() + ((giveBuilderBonus ? coinsOnKillAddBuilder : coinsOnKillAdd) * Maths::Pow(killstreakFactor, killer.get_u8("killstreak"))));
 			}
 			
 			CPlayer@ helper = getAssistPlayer (victim, killer);
