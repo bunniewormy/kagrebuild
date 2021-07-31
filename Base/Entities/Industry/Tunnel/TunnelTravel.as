@@ -144,7 +144,7 @@ void Travel(CBlob@ this, CBlob@ caller, CBlob@ tunnel)
 			return;
 
 		Vec2f position = tunnel.getPosition();
-		if (this.exists("travel offset"))
+		if (tunnel.exists("travel offset"))
 		{
 			tunnel.isFacingLeft() ? position -= tunnel.get_Vec2f("travel offset") : position += tunnel.get_Vec2f("travel offset");
 		}
