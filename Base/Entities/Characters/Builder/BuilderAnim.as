@@ -153,14 +153,14 @@ void onTick(CSprite@ this)
 					}
 
 					if (map.isTileWood(t.type) || // wood tile
-					 	t.type == CMap::tile_wood_back || // wood backwall
-					 	t.type == 207 || // wood backwall damaged
-					 	map.isTileCastle(t.type) || // castle block
-					 	t.type == CMap::tile_castle_back || // castle backwall
+						t.type == CMap::tile_wood_back || // wood backwall
+						t.type == 207 || // wood backwall damaged
+						map.isTileCastle(t.type) || // castle block
+						t.type == CMap::tile_castle_back || // castle backwall
 						t.type == 76 || // castle backwall damaged
-					 	t.type == 77 || // castle backwall damaged
-					 	t.type == 78 || // castle backwall damaged
-					 	t.type == 79 || // castle backwall damaged
+						t.type == 77 || // castle backwall damaged
+						t.type == 78 || // castle backwall damaged
+						t.type == 79 || // castle backwall damaged
 					 	t.type == CMap::tile_castle_back_moss) // castle mossbackwall
 					{
 						hitting_built = true;

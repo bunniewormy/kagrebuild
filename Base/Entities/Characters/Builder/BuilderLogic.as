@@ -248,7 +248,6 @@ void Pickaxe(CBlob@ this)
 	// pickaxe!
 
 	this.get("hitdata", @hitdata);
-
 	if (hitdata is null) return;
 
 	Vec2f blobPos = this.getPosition();
@@ -260,34 +259,6 @@ void Pickaxe(CBlob@ this)
 	normal.Normalize();
 
 	Vec2f attackVel = normal;
-
-	if (!adjusttime)
-	{
-		if (!justCheck)
-		{
-			if (hitdata.blobID == 0)
-			{
-				TileType t = getMap().getTile(hitdata.tilepos).type;
-				if (t != CMap::tile_empty && t != CMap::tile_ground_back)
-				{
-					SendHitCommand(this, null, hitdata.tilepos, attackVel, hit_damage);
-				}
-
-			}
-			else
-			{
-				CBlob@ b = getBlobByNetworkID(hitdata.blobID);
-				if (b !is null)
-				{
-					SendHitCommand(this, b, (b.getPosition() + this.getPosition()) * 0.5f, attackVel, hit_damage);
-				}
-			}
-		}
-		return;
-	}
-
-	hitdata.blobID = 0;
-	hitdata.tilepos = Vec2f_zero;
 
 	f32 arcdegrees = 90.0f;
 
@@ -304,6 +275,42 @@ void Pickaxe(CBlob@ this)
 	Vec2f tilepos = blobPos + normal * Maths::Min(aimDir.Length() - 1, tile_attack_distance);
 	Vec2f surfacepos;
 	map.rayCastSolid(blobPos, tilepos, surfacepos);
+
+	CBlob@ blobAtPos = map.getBlobAtPosition(tilepos);
+
+	bool isBlobTile = false;
+
+	if (blobAtPos !is null)
+	{
+		isBlobTile = (blobAtPos.getName() == "wooden_platform" || blobAtPos.hasTag("door"));
+	}
+
+	if (!adjusttime)
+	{
+		if (!justCheck)
+		{
+			if (hitdata.blobID == 0 && (blobAtPos is null || !isBlobTile))
+			{
+				TileType t = getMap().getTile(hitdata.tilepos).type;
+				if (t != CMap::tile_empty && t != CMap::tile_ground_back)
+				{
+					SendHitCommand(this, null, hitdata.tilepos, attackVel, hit_damage);
+				}
+			}
+			else if (hitdata.blobID != 0)
+			{
+				CBlob@ b = getBlobByNetworkID(hitdata.blobID);
+				if (b !is null)
+				{
+					SendHitCommand(this, b, (b.getPosition() + this.getPosition()) * 0.5f, attackVel, hit_damage);
+				}
+			}
+		}
+		return;
+	}
+
+	hitdata.blobID = 0;
+	hitdata.tilepos = Vec2f_zero;
 
 	Vec2f surfaceoff = (tilepos - surfacepos);
 	f32 surfacedist = surfaceoff.Normalize();
@@ -567,8 +574,6 @@ void onDetach(CBlob@ this, CBlob@ detached, AttachmentPoint@ attachedPoint)
 			detached.IgnoreCollisionWhileOverlapped(null);
 		}
 	}
-
-	printf("hic");
 
 	// BUILD BLOB
 	// take requirements from blob that is built and play sound
