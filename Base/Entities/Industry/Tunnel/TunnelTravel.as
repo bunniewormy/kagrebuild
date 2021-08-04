@@ -29,7 +29,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 	if (this.isOverlapping(caller) &&
 	        this.hasTag("travel tunnel") &&
 	        (!this.hasTag("teamlocked tunnel") || this.getTeamNum() == caller.getTeamNum()) &&
-	        !this.hasTag("under raid") &&
+	        (!this.hasTag("under raid") || this.hasTag("ignore raid")) &&
 	        //CANNOT travel when stunned
 			!(isKnockable(caller) && isKnocked(caller))
 		)

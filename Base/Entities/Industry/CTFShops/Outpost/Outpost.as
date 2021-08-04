@@ -23,6 +23,7 @@ void onInit(CBlob@ this)
 	this.Tag("respawn");
 	this.Tag("change class drop inventory");
 	this.Tag("travel tunnel");
+	this.Tag("teamlocked tunnel");
 	this.Tag("ignore raid");
 	this.Tag("builder always hit");
 
@@ -67,7 +68,7 @@ void GetButtonsFor(CBlob@ this, CBlob@ caller)
 {
 	if (!canSeeButtons(this, caller)) return;
 
-	if (canChangeClass(this, caller) && caller.getTeamNum() == this.getTeamNum())
+	if (canChangeClass(this, caller))
 	{
 		caller.CreateGenericButton("$change_class$", Vec2f(6, 6), this, buildSpawnMenu, getTranslatedString("Swap Class"));
 	}

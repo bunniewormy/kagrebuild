@@ -303,8 +303,6 @@ shared class CTFSpawns : RespawnSystem
 
 			info.spawn_point = player.getSpawnPoint();
 
-			printf("nvr" + getSpawnBlob(info).getName());
-
 			if (getSpawnBlob(info).exists("additional respawn time") && oldSpawn.getName() != getSpawnBlob(info).getName())
 			{
 				old_spawn_time += getSpawnBlob(info).get_u8("additional respawn time");
