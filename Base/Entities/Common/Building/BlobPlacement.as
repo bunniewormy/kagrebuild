@@ -16,7 +16,7 @@ void PlaceBlob(CBlob@ this, CBlob @blob, Vec2f cursorPos)
 		if (!serverBlobCheck(this, blob, cursorPos))
 			return;
 
-		u32 delay = this.get_u32("build delay");
+		u32 delay = (getRules().isWarmup() ? this.get_u32("warmup build delay") : this.get_u32("build delay"));
 		SetBuildDelay(this, delay / 2); // Set a smaller delay to compensate for lag/late packets etc
 
 		CShape@ shape = blob.getShape();
@@ -48,7 +48,7 @@ void HealBlob(CBlob@ this, CBlob @healBlob, CBlob @carryBlob, Vec2f cursorPos)
 		if (!serverBlobCheck(this, healBlob, cursorPos))
 			return;
 
-		u32 delay = this.get_u32("build delay");
+		u32 delay = (getRules().isWarmup() ? this.get_u32("warmup build delay") : this.get_u32("build delay"));
 		SetBuildDelay(this, delay / 2); // Set a smaller delay to compensate for lag/late packets etc
 
 		healBlob.server_SetHealth(healBlob.getInitialHealth());
@@ -370,9 +370,8 @@ void onTick(CBlob@ this)
 				{
 					CMap@ map = getMap();
 					CBlob@ blobAtPos = map.getBlobAtPosition(getBottomOfCursor(bc.tileAimPos, carryBlob));
-					if (blobAtPos !is null && carryBlob.getConfig() == blobAtPos.getConfig())
+					if (blobAtPos !is null && carryBlob.getConfig() == blobAtPos.getConfig() && blobAtPos.getName() != "ladder")
 					{
-						printf("illida");
 						CBitStream params;
 						params.write_u16(carryBlob.getNetworkID());
 						params.write_Vec2f(getBottomOfCursor(bc.tileAimPos, carryBlob));
@@ -385,7 +384,7 @@ void onTick(CBlob@ this)
 						params.write_Vec2f(getBottomOfCursor(bc.tileAimPos, carryBlob));
 						this.SendCommand(this.getCommandID("placeBlob"), params);
 					}
-					u32 delay = 2 * this.get_u32("build delay");
+					u32 delay = 2 * (getRules().isWarmup() ? this.get_u32("warmup build delay") : this.get_u32("build delay"));
 					SetBuildDelay(this, delay);
 					bc.blobActive = false;
 				}

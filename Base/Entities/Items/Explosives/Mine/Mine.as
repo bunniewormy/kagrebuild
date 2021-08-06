@@ -217,5 +217,14 @@ bool canBePickedUp(CBlob@ this, CBlob@ blob)
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
-	return customData == Hitters::builder? this.getInitialHealth() / 2 : damage;
+	if (customData == Hitters::builder)
+		damage = this.getInitialHealth() / 2;
+
+	if (customData == Hitters::sword)
+		damage *= 2;
+
+	if (customData == Hitters::drill)
+		damage *= 2;
+
+	return damage;
 }

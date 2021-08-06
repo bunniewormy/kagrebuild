@@ -149,11 +149,6 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid, Vec2f normal, Vec2f point
 				sprite.SetAnimation("bounce");
 				sprite.PlaySound("TrampolineJump.ogg");
 			}
-			//damage the tramp after bounce
-			string name = blob.getName();
-			if (name == "knight" || name == "archer" || name == "builder" || name == "keg" || name == "mine")
-				this.server_Hit(this, this.getPosition(), Vec2f(), 1.0f, Hitters::crush);
-			//blob.server_Hit(blob, blob.getPosition(), Vec2f(), 1.0f, Hitters::fire);
 		}
 	}
 }

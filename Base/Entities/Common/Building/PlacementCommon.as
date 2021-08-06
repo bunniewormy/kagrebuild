@@ -283,7 +283,9 @@ void SetupBuildDelay(CBlob@ this)
 {
 	this.set_u32("build time", getGameTime());
 	this.set_u32("build delay", 7);  // move this to builder init
+	this.set_u32("warmup build delay", 4);
 }
+
 
 bool isBuildDelayed(CBlob@ this)
 {
@@ -292,7 +294,10 @@ bool isBuildDelayed(CBlob@ this)
 
 void SetBuildDelay(CBlob@ this)
 {
-	SetBuildDelay(this, this.get_u32("build delay"));
+	if (!getRules().isWarmup())
+		SetBuildDelay(this, this.get_u32("build delay"));
+	else
+		SetBuildDelay(this, this.get_u32("warmup build delay"));
 }
 
 void SetBuildDelay(CBlob@ this, uint time)
